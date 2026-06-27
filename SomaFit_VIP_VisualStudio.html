@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SomaFit Fisioterapia® - Sistema VIP de Apertura</title>
+    
+    <!-- FUENTES: Montserrat para un look limpio, moderno y corporativo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ICONOS: FontAwesome para los elementos visuales de fisioterapia y masajes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-graphite: #111418;      /* Fondo ultra premium oscuro (Grafito) */
+            --card-charcoal: #1A1F26;    /* Gris carbón para los contenedores y tarjetas */
+            --rose-gold: #E8B4A6;        /* Color de acento principal (Oro Rosado) */
+            --mint-wellness: #A4E8DD;    /* Color secundario para detalles médicos (Menta) */
+            --white-pearl: #F3F4F6;      /* Blanco suave para textos principales */
+            --text-muted: #7E8B9B;       /* Gris opaco para textos secundarios */
+            --success: #10B981;
+            --error: #EF4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-graphite);
+            color: var(--white-pearl);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-x: hidden;
+        }
+
+        /* BARRA SUPERIOR: Temporizador de Urgencia (Estrategia de Conversión) */
+        .urgency-bar {
+            width: 100%;
+            background-color: rgba(232, 180, 166, 0.06);
+            border-bottom: 1px solid rgba(232, 180, 166, 0.12);
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            color: var(--rose-gold);
+            text-transform: uppercase;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        /* CONTENEDOR MÓVIL: Optimizado al 100% para pantallas de celulares desde WhatsApp */
+        .app-phone-container {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            background-color: #15191F;
+            padding: 80px 25px 40px 25px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 60px rgba(0,0,0,0.6);
+            border-left: 1px solid rgba(255,255,255,0.02);
+            border-right: 1px solid rgba(255,255,255,0.02);
+        }
+
+        /* BRANDING: Logotipo Oficial Estilo Instagram de SomaFit® */
+        .brand-block {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        
+        /* Animación Secuencial de la Columna Vertebral */
+        .spine-animation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .spine-vertebra {
+            width: 6px;
+            height: 6px;
+            background-color: var(--text-muted);
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+        .spine-vertebra.active {
+            background-color: var(--mint-wellness);
+            box-shadow: 0 0 10px var(--mint-wellness);
+            animation: spineFlow 1.6s infinite ease-in-out;
+        }
+        .spine-vertebra:nth-child(5) { animation-delay: 0.1s; }
+        .spine-vertebra:nth-child(4) { animation-delay: 0.3s; }
+        .spine-vertebra:nth-child(3) { animation-delay: 0.5s; }
+        .spine-vertebra:nth-child(2) { animation-delay: 0.7s; }
+        .spine-vertebra:nth-child(1) { animation-delay: 0.9s; }
+
+        @keyframes spineFlow {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+
+        .brand-logo-text {
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--white-pearl);
+            text-transform: uppercase;
+            cursor: pointer;
+            user-select: none;
+        }
+        .brand-logo-text span {
+            color: var(--rose-gold);
+            font-weight: 300;
+        }
+        .brand-slogan-text {
+            font-size: 11px;
+            font-style: italic;
+            color: var(--text-muted);
+            margin-top: 6px;
+            letter-spacing: 0.5px;
+        }
+        .vip-badge-tag {
+            display: inline-block;
+            background: rgba(164, 232, 221, 0.04);
+            border: 1px solid rgba(164, 232, 221, 0.12);
+            color: var(--mint-wellness);
+            font-size: 9px;
+            font-weight: 600;
+            padding: 5px 16px;
+            border-radius: 50px;
+            margin-top: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* MANEJO DE VISTAS DINÁMICAS (JS) */
+        .app-view-panel {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+            animation: premiumReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .app-view-panel.active {
+            display: flex;
+        }
+
+        @keyframes premiumReveal {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--white-pearl);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        .subtitle {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Tarjeta de Contenidos Clave */
+        .lounge-card {
+            background-color: var(--card-charcoal);
+            border: 1px solid rgba(255, 255, 255, 0.01);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        .lounge-card-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--rose-gold);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+        .lounge-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 14px;
+            font-size: 13px;
+            color: #E2E8F0;
+        }
+        .lounge-row i {
+            color: var(--mint-wellness);
+            font-size: 14px;
+            width: 18px;
+            text-align: center;
+        }
+
+        /* Inputs Estilizados */
+        .form-element {
+            margin-bottom: 22px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--rose-gold);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .input-with-icon {
+            position: relative;
+        }
+        .input-with-icon i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background-color: var(--card-charcoal);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 8px;
+            font-size: 13.5px;
+            color: var(--white-pearl);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: var(--rose-gold);
+            background-color: #1F252E;
+        }
+
+        /* Botón de Acción Estilo Minimalista (Inspiración Apple) */
+        .btn-premium-action {
+            background-color: var(--white-pearl);
+            color: var(--bg-graphite);
+            border: none;
+            padding: 16px 20px;
+            font-size: 13.5px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.25s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: auto;
+        }
+        .btn-premium-action:hover {
+            background-color: #E2E8F0;
+        }
+        .btn-whatsapp-direct {
+            background-color: #25D366;
+            color: white;
+            margin-top: 20px;
+        }
+
+        /* --- CONTENEDOR Y MECÁNICA DE LA RULETA --- */
+        .wheel-container-box {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 10px auto 35px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .wheel-top-puntero {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 22px solid var(--white-pearl);
+            z-index: 10;
+        }
+        canvas#ruletaCanvas {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            border: 6px solid rgba(255,255,255,0.02);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            transition: transform 5.5s cubic-bezier(0.1, 0.85, 0.1, 1);
+        }
+        .wheel-center-axis {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            background-color: var(--bg-graphite);
+            border: 2px solid rgba(255,255,255,0.06);
+            border-radius: 50%;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--rose-gold);
+        }
+
+        /* --- REVELACIÓN DE TICKET DIGITAL --- */
+        .ticket-container {
+            background-color: var(--card-charcoal);
+            border: 1px dashed rgba(232, 180, 166, 0.2);
+            padding: 30px 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .ticket-header-tag {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .ticket-prize-display {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--white-pearl);
+            margin: 15px 0;
+            line-height: 1.4;
+        }
+        .ticket-coupon-code {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--mint-wellness);
+            letter-spacing: 4px;
+            background-color: rgba(164, 232, 221, 0.02);
+            padding: 8px 16px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .ticket-warning-text {
+            font-size: 11px;
+            color: var(--error);
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        /* --- DASHBOARD DIRECTIVO OCULTO DE SARA Y ANDREA --- */
+        .admin-dashboard-view {
+            max-width: 1150px !important;
+            width: 95% !important;
+            background-color: #14181E;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 40px auto;
+            display: none;
+            flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+        .admin-dashboard-view.active {
+            display: flex;
+        }
+        .admin-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 20px;
+            margin-bottom: 35px;
+        }
+        .admin-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+        .admin-stat-card {
+            background-color: var(--card-charcoal);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.01);
+        }
+        .admin-stat-card h6 {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .admin-stat-card .big-num {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--white-pearl);
+        }
+        .admin-stat-card .rate-subtext {
+            font-size: 11px;
+            color: var(--mint-wellness);
+            margin-top: 4px;
+        }
+        .admin-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 6px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 14px 16px;
+            font-size: 12.5px;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+        th {
+            background-color: #0B0E11;
+            color: var(--rose-gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Temporizador de Urgencia Superior -->
+    <div class="urgency-bar">
+        <i class="fa-solid fa-hourglass-start"></i> Invitación Exclusiva: Tu enlace VIP expirará en <span id="clockDisplay">05:00</span> minutos
+    </div>
+
+    <!-- VISTA DEL PACIENTE (CELULAR) -->
+    <div class="app-phone-container" id="clientLayoutWrapper">
+        <div class="brand-block">
+            <!-- Animación de la Columna Vertebral -->
+            <div class="spine-animation">
+                <div class="spine-vertebra active"></div>
+                <div class="spine-vertebra active"></div>
+                <div class="spine-vertebra active"></div>
+                <div class="spine-vertebra active"></div>
+                <div class="spine-vertebra active"></div>
+            </div>
+            <!-- LOGO: Al darle 3 clics rápidos se activa el Panel de Control Oculto -->
+            <div class="brand-logo-text" onclick="triggerAdminSecretAccess()">SomaFit<span>Fisioterapia®</span></div>
+            <div class="brand-slogan-text">"Tu cuerpo, tu ritmo. Sin lesiones."</div>
+            <div class="vip-badge-tag"><i class="fa-solid fa-gem"></i> Programa VIP de Apertura</div>
+        </div>
+
+        <!-- VISTA 1: ESCANEO INICIAL -->
+        <div class="app-view-panel active" id="view-loading-scan">
+            <div style="margin: auto; text-align: center;">
+                <i class="fa-solid fa-fingerprint fa-spin" style="font-size: 28px; color: var(--mint-wellness);"></i>
+                <p style="margin-top: 15px; font-size: 11px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;">Validando token de seguridad por apertura...</p>
+            </div>
+        </div>
+
+        <!-- VISTA 2: BIENVENIDA -->
+        <div class="app-view-panel" id="view-welcome-landing">
+            <h1>Bienvenido/a de regreso</h1>
+            <p class="subtitle">Como agradecimiento por haber formado parte de nuestra trayectoria, diseñamos esta experiencia privada con motivo de la apertura de nuestras nuevas instalaciones en San Isidro.</p>
+            
+            <div class="lounge-card">
+                <div class="lounge-card-title">Privilegios autorizados:</div>
+                <div class="lounge-row"><i class="fa-solid fa-notes-medical"></i> <span>Validación directa de tu expediente histórico.</span></div>
+                <div class="lounge-row"><i class="fa-solid fa-spa"></i> <span>Acceso a Módulos de Masaje Deportivo Premium.</span></div>
+                <div class="lounge-row"><i class="fa-solid fa-clock"></i> <span>Sesiones extendidas de alta especialidad.</span></div>
+            </div>
+
+            <button class="btn-premium-action" onclick="switchActiveView('view-whitelist-auth')">
+                Ingresar al Programa <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- VISTA 3: FILTRO DE LISTA BLANCA (ANTIFRAUDE) -->
+        <div class="app-view-panel" id="view-whitelist-auth">
+            <h1>Verificación de Invitación</h1>
+            <p class="subtitle">Introduce tu número telefónico registrado para corroborar tu acceso exclusivo en nuestra Lista Blanca semanal de apertura.</p>
+            
+            <div class="form-element">
+                <label>Nombre Completo *</label>
+                <div class="input-with-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                    <input type="text" id="patientFullName" placeholder="Introduce tu nombre y apellido">
+                </div>
+            </div>
+
+            <div class="form-element">
+                <label>WhatsApp de Contacto (10 dígitos) *</label>
+                <div class="input-with-icon">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                    <input type="tel" id="patientWhatsApp" placeholder="Ej. 4771234567">
+                </div>
+            </div>
+
+            <button class="btn-premium-action" onclick="executeWhitelistValidation()">
+                Verificar Credenciales <i class="fa-solid fa-shield-halved"></i>
+            </button>
+        </div>
+
+        <!-- VISTA 4: LA RULETA DE BENEFICIOS -->
+        <div class="app-view-panel" id="view-roulette-wheel">
+            <h1 style="text-align: center;">Beneficio VIP</h1>
+            <p class="subtitle" style="text-align: center; margin-bottom: 15px;">Activa el motor digital de asignación clínica. Tu beneficio quedará ligado a tu teléfono de forma única.</p>
+            
+            <div class="wheel-container-box">
+                <div class="wheel-top-puntero"></div>
+                <div class="wheel-center-axis">SFT®</div>
+                <canvas id="ruletaCanvas" width="320" height="320"></canvas>
+            </div>
+
+            <button class="btn-premium-action" id="spinActionTriggerBtn" onclick="processWheelSpinCalculation()">
+                Girar y Reservar Lugar <i class="fa-solid fa-play"></i>
+            </button>
+        </div>
+
+        <!-- VISTA 5: REVELACIÓN DE TICKET CORPORATIVO -->
+        <div class="app-view-panel" id="view-vip-ticket-result">
+            <h1>Tu Beneficio de Reingreso</h1>
+            <p class="subtitle">El sistema ha reservado el beneficio de forma correcta en la agenda del Local 5. Envía tu ticket para confirmar tu espacio.</p>
+            
+            <div class="ticket-container">
+                <div class="ticket-header-tag"><i class="fa-solid fa-ticket"></i> Pase VIP Confirmado</div>
+                <div class="ticket-prize-display" id="displayPrizeTitle">Asignando beneficio...</div>
+                <div class="ticket-coupon-code" id="displayCouponUniqueCode">SFT-VIP-0000</div>
+                <div class="ticket-warning-text" id="displayPrizeCondition">* Válido agendando mediante este canal.</div>
+            </div>
+
+            <button class="btn-premium-action btn-whatsapp-direct" onclick="launchWhatsAppVipTicketRedirection()">
+                <i class="fa-brands fa-whatsapp"></i> Confirmar Mi Espacio Al Momento
+            </button>
+        </div>
+
+        <!-- VISTA 6: ACCESO DENEGADO / EXPIRADO -->
+        <div class="app-view-panel" id="view-fraud-blocked">
+            <div style="margin: auto; text-align: center;">
+                <i class="fa-solid fa-ban" style="font-size: 45px; color: var(--error); margin-bottom: 20px;"></i>
+                <h1 id="errorTitleHeader">Acceso Restringido</h1>
+                <p class="subtitle" id="errorDescriptionText">Este número telefónico o enlace no cuenta con una invitación VIP activa en la base de datos de control para esta semana de apertura.</p>
+                <p style="font-size: 11px; color: var(--text-muted);">Si consideras que es un error de sistema, por favor contacta de forma directa a la administración de SomaFit®.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL DIRECTIVO ACCESIBLE SÓLO CON CLAVE (SARA Y ANDREA) -->
+    <div class="admin-dashboard-view" id="adminDashboardLayout">
+        <div class="admin-header-row">
+            <div>
+                <h2 style="font-size: 20px; color: var(--white-pearl);">SomaFit® - Consola Corporativa Directiva</h2>
+                <p style="font-size: 12px; color: var(--text-muted);">Campaña de Reactivación de Pacientes Históricos | Sucursal San Isidro</p>
+            </div>
+            <button class="btn-premium-action" style="width: auto; padding: 8px 16px;" onclick="wipeDashboardLocalLogs()">
+                <i class="fa-solid fa-arrows-rotate"></i> Resetear Datos
+            </button>
+        </div>
+
+        <div class="admin-metrics-grid">
+            <div class="admin-stat-card">
+                <h6>Base Invitada Semanal</h6>
+                <div class="big-num">20</div>
+                <div class="rate-subtext" style="color: var(--text-muted);">Envíos de Control (Lunes)</div>
+            </div>
+            <div class="admin-stat-card">
+                <h6>Enlaces Abiertos</h6>
+                <div class="big-num">14</div>
+                <div class="rate-subtext">Tasa de Apertura: 70.0%</div>
+            </div>
+            <div class="admin-stat-card">
+                <h6>Giros Concluidos (Leads)</h6>
+                <div class="big-num" id="adm-spins-count">0</div>
+                <div class="rate-subtext" id="adm-conversion-rate">Tasa Conversión: 0%</div>
+            </div>
+            <div class="admin-stat-card">
+                <h6>Pacientes Recuperados (65%)</h6>
+                <div class="big-num" id="adm-recovered-count">0</div>
+                <div class="rate-subtext" style="color: var(--rose-gold);">Objetivo: 5-10 Semanales</div>
+            </div>
+            <div class="admin-stat-card">
+                <h6>Ingresos Recuperados Proyectados</h6>
+                <div class="big-num" id="adm-revenue-amount">$0 MXN</div>
+                <div class="rate-subtext">Ticket Base Mínimo: $350</div>
+            </div>
+        </div>
+
+        <h3 style="font-size: 13px; margin-bottom: 15px; letter-spacing: 0.5px; color: var(--rose-gold);">
+            <i class="fa-solid fa-address-book"></i> Registro Base de Leads Capturados y Cupones Activos
+        </h3>
+        <div class="admin-table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Paciente VIP</th>
+                        <th>WhatsApp León</th>
+                        <th>Premio Otorgado</th>
+                        <th>Cupón Generado</th>
+                        <th>Fecha de Registro</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableLogsBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                            Ningún paciente de la lista blanca ha realizado su tiro en esta sesión de simulación todavía.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ARQUITECTURA TÉCNICA Y LÓGICA DE PROGRAMACIÓN (JAVASCRIPT) -->
+    <script>
+        /* ========================================================================
+           📋 BASE DE DATOS DE CONTROL: WHITELIST (LISTA BLANCA DE TELÉFONOS DE LEÓN GTO)
+           ========================================================================
+           Andrea y Sara: Aquí es donde van a colocar cada lunes los 20 números de 10 dígitos 
+           de los pacientes seleccionados. Dejé 20 números de ejemplo para hacer las pruebas.
+        */
+        const WHITELIST_PACIENTES_SEMANALES = [
+            '4792089649', '4779876543', '4775556677', '4771112233', '4774445566',
+            '4778889900', '4772223344', '4776667788', '4773334455', '4777778899',
+            '4770001122', '4775554433', '4771231234', '4774564567', '4777897890',
+            '4771111111', '4772222222', '4773333333', '4774444444', '4775555555'
+        ];
+
+        // CONFIGURACIÓN ESTRATÉGICA DE PREMIOS Y PROBABILIDADES PONDERADAS
+        const MATRIZ_PREMIOS_CONFIG = [
+            { id: 0, nombre: "$100 MXN de Saldo a Favor en tu Consulta", prob: 40, color: "#111418", cond: "Abono directo aplicable al costo neto total de tu terapia física de reingreso." },
+            { id: 1, nombre: "Pase Golden Familiar: 50% OFF para Acompañante", prob: 20, color: "#1A1F26", cond: "Tu acompañante recibe mitad de precio en su valoración asistiendo juntos el mismo día." },
+            { id: 2, nombre: "$150 MXN de Descuento Directo en Sesión", prob: 20, color: "#111418", cond: "Descuento inmediato aplicable en tu sesión de fisioterapia u osteopatía avanzada." },
+            { id: 3, nombre: "Upgrade VIP: Módulo de Masaje Deportivo Premium", prob: 14, color: "#1A1F26", cond: "Se añade una descarga de tejido profundo con técnicas manuales avanzadas a tu sesión regular." },
+            { id: 4, nombre: "Sesión Extendida de Especialidad (De 1 Hora a 1 Hora 30 Minutos)", prob: 5, color: "#111418", cond: "Recibe 30 minutos extras de terapia manual y dosificación del movimiento terapéutico sin costo." },
+            { id: 5, nombre: "Kit de Recuperación Físico SomaFit®", prob: 4, color: "#1A1F26", cond: "Se te entregará un obsequio físico institucional de la marca al momento de acudir a tu cita." },
+            { id: 6, nombre: "Sesión Clínica de Fisioterapia 100% GRATIS", prob: 1, color: "#E8B4A6", cond: "Sesión sin costo. Requisito obligatorio de apertura: Subir historia en la nueva sucursal etiquetando a @somafit.fisioterapia y dejar reseña Google de 5 estrellas." }
+        ];
+
+        let secretClickCounter = 0;
+        let tokenDeAccesoURL = "";
+        let premioSeleccionadoPorAlgoritmo = null;
+        let codigoVipUnicoGlobal = "";
+        let temporizadorIntervalControl = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Inicializar la persistencia de datos local simulando base relacional
+            if(!localStorage.getItem('sft_v3_vs_init')) {
+                localStorage.setItem('sft_v3_vs_init', 'true');
+                localStorage.setItem('sft_v3_vs_used_phones', JSON.stringify([]));
+                localStorage.setItem('sft_v3_vs_leads', JSON.stringify([]));
+            }
+
+            // Lectura de parámetro Token en la URL (Para control de campañas individuales si se requiere)
+            const urlParameters = new URLSearchParams(window.location.search);
+            tokenDeAccesoURL = urlParameters.get('token') || 'sft_VIP_JULIO';
+
+            // Simulación de escaneo clínico de red inicial
+            setTimeout(() => { switchActiveView('view-welcome-landing'); }, 1400);
+
+            executeUrgencyTimerClock();
+            renderPremiumCanvasWheelGraphics();
+            calculateAndRenderDashboardMetrics();
+        });
+
+        // Reloj del Temporizador de Expiración (5 Minutos)
+        function executeUrgencyTimerClock() {
+            let totalSecondsCount = 300; // 5 minutos de resguardo
+            const clockDisplayElement = document.getElementById('clockDisplay');
+
+            temporizadorIntervalControl = setInterval(() => {
+                let minutes = Math.floor(totalSecondsCount / 60);
+                let seconds = totalSecondsCount % 60;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                clockDisplayElement.innerText = `0${minutes}:${seconds}`;
+
+                if (totalSecondsCount <= 0) {
+                    clearInterval(temporizadorIntervalControl);
+                    document.getElementById('errorTitleHeader').innerText = "Enlace VIP Expirado";
+                    document.getElementById('errorDescriptionText').innerText = "El tiempo límite de seguridad (5 minutos) para validar tu acceso exclusivo en línea ha concluido para proteger la base de datos.";
+                    switchActiveView('view-fraud-blocked');
+                }
+                totalSecondsCount--;
+            }, 1000);
+        }
+
+        function switchActiveView(viewId) {
+            document.querySelectorAll('.app-view-panel').forEach(view => view.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        // LÓGICA CORE ANTIFRAUDE: Cruce de datos con la Whitelist
+        function executeWhitelistValidation() {
+            const nameInput = document.getElementById('patientFullName').value.trim();
+            const phoneInput = document.getElementById('patientWhatsApp').value.trim().replace(/\D/g, ""); // Remueve letras
+
+            if(!nameInput || phoneInput.length < 10) {
+                alert("Para validar tu exclusividad en el sistema, introduce tu nombre y tu número de WhatsApp de León a 10 dígitos.");
+                return;
+            }
+
+            // 1. Validar si el número está en los 20 elegidos
+            if(!WHITELIST_PACIENTES_SEMANALES.includes(phoneInput)) {
+                document.getElementById('errorTitleHeader').innerText = "Acceso Restringido";
+                document.getElementById('errorDescriptionText').innerText = "Lo sentimos, este beneficio es intransferible y este número de WhatsApp no se encuentra registrado en la lista de invitados VIP de esta semana por inauguración.";
+                switchActiveView('view-fraud-blocked');
+                return;
+            }
+
+            // 2. Validar si ese teléfono ya consumió su intento de ruleta anteriormente
+            const usedPhoneList = JSON.parse(localStorage.getItem('sft_v3_vs_used_phones') || '[]');
+            if(usedPhoneList.includes(phoneInput)) {
+                document.getElementById('errorTitleHeader').innerText = "Beneficio ya Otorgado";
+                document.getElementById('errorDescriptionText').innerText = "Alerta de duplicado: Este número de contacto ya ejecutó su tiro en el sistema y su Ticket VIP único ya fue guardado en la consola directiva.";
+                switchActiveView('view-fraud-blocked');
+                return;
+            }
+
+            switchActiveView('view-roulette-wheel');
+        }
+
+        // Renderizado del Gráfico de la Ruleta Médica Premium via Canvas Nativo
+        function renderPremiumCanvasWheelGraphics() {
+            const canvasElement = document.getElementById('ruletaCanvas');
+            if(!canvasElement) return;
+            const ctx = canvasElement.getContext('2d');
+            const totalSlicesCount = MATRIZ_PREMIOS_CONFIG.length;
+            const anglePerSlice = (2 * Math.PI) / totalSlicesCount;
+
+            ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+            for (let i = 0; i < totalSlicesCount; i++) {
+                const angle = i * anglePerSlice;
+                ctx.beginPath();
+                ctx.fillStyle = MATRIZ_PREMIOS_CONFIG[i].color;
+                ctx.moveTo(160, 160);
+                ctx.arc(160, 160, 154, angle, angle + anglePerSlice);
+                ctx.lineTo(160, 160);
+                ctx.fill();
+                ctx.strokeStyle = "rgba(255,255,255,0.03)";
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Rotación tipográfica interna para las rebanadas
+                ctx.save();
+                ctx.translate(160, 160);
+                ctx.rotate(angle + anglePerSlice / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = MATRIZ_PREMIOS_CONFIG[i].color === "#FFFFFF" || MATRIZ_PREMIOS_CONFIG[i].color === "#E8B4A6" ? "#111418" : "#8A94A6";
+                ctx.font = "600 8.5px 'Montserrat'";
+                
+                let textLabelShortened = MATRIZ_PREMIOS_CONFIG[i].nombre.substring(0, 16) + "..";
+                ctx.fillText(textLabelShortened, 142, 3);
+                ctx.restore();
+            }
+        }
+
+        // Ejecución Física de Giro y Cálculo Probabilístico Ponderado Real
+        function processWheelSpinCalculation() {
+            const triggerBtn = document.getElementById('spinActionTriggerBtn');
+            triggerBtn.disabled = true;
+            triggerBtn.style.opacity = "0.4";
+            triggerBtn.innerText = "Calculando Carga Biomecánica...";
+
+            // Detener el reloj de expiración al girar para proteger la sesión
+            clearInterval(temporizadorIntervalControl);
+
+            // Algoritmo matemático ponderado basado en tus porcentajes de Growth Marketing
+            const randomProbabilityPoint = Math.random() * 100;
+            let sumAcumulator = 0;
+            
+            for(let premio of MATRIZ_PREMIOS_CONFIG) {
+                sumAcumulator += premio.prob;
+                if(randomProbabilityPoint <= sumAcumulator) {
+                    premioSeleccionadoPorAlgoritmo = premio;
+                    break;
+                }
+            }
+            if(!premioSeleccionadoPorAlgoritmo) premioSeleccionadoPorAlgoritmo = MATRIZ_PREMIOS_CONFIG[0];
+
+            const totalSlices = MATRIZ_PREMIOS_CONFIG.length;
+            const degPerSlice = 360 / totalSlices;
+            const sliceIndex = premioSeleccionadoPorAlgoritmo.id;
+            const structuralSpinsDeg = 8 * 360; // 8 vueltas completas de inercia e impacto visual
+            
+            // Ángulo exacto de frenado alineado al marcador vertical superior de la ruleta
+            const targetSpinRotationDeg = structuralSpinsDeg + (360 - (sliceIndex * degPerSlice) - (degPerSlice / 2)) - 90;
+
+            const canvasElement = document.getElementById('ruletaCanvas');
+            canvasElement.style.transform = `rotate(${targetSpinRotationDeg}deg)`;
+
+            // Despliegue de resultados al concluir la inercia (5.5 segundos)
+            setTimeout(() => {
+                const randomIdCode = Math.floor(1000 + Math.random() * 9000);
+                codigoVipUnicoGlobal = `SFT-VIP-${randomIdCode}`;
+
+                saveLeadToLocalPersistenceDatabase();
+
+                document.getElementById('displayPrizeTitle').innerText = premioSeleccionadoPorAlgoritmo.nombre;
+                document.getElementById('displayCouponUniqueCode').innerText = codigoVipUnicoGlobal;
+                document.getElementById('displayPrizeCondition').innerText = `* Regla de validación: ${premioSeleccionadoPorAlgoritmo.cond}`;
+                switchActiveView('view-vip-ticket-result');
+            }, 5500);
+        }
+
+        function saveLeadToLocalPersistenceDatabase() {
+            const name = document.getElementById('patientFullName').value.trim();
+            const phone = document.getElementById('patientWhatsApp').value.trim().replace(/\D/g, "");
+
+            const leadsArrayList = JSON.parse(localStorage.getItem('sft_v3_vs_leads') || '[]');
+            const usedPhoneArrayList = JSON.parse(localStorage.getItem('sft_v3_vs_used_phones') || '[]');
+
+            leadsArrayList.push({
+                nombre: name,
+                telefono: phone,
+                premio: premioSeleccionadoPorAlgoritmo.nombre,
+                cupon: codigoVipUnicoGlobal,
+                fecha: new Date().toLocaleString()
+            });
+            usedPhoneArrayList.push(phone);
+
+            localStorage.setItem('sft_v3_vs_leads', JSON.stringify(leadsArrayList));
+            localStorage.setItem('sft_v3_vs_used_phones', JSON.stringify(usedPhoneArrayList));
+            calculateAndRenderDashboardMetrics();
+        }
+
+        // Redirección y Despliegue del Ticket VIP Enriquecido a WhatsApp León Gto
+        function launchWhatsAppVipTicketRedirection() {
+            const targetSomaFitNumber = "524776548664"; // Teléfono oficial configurado de SomaFit
+            const enrichWhatsAppMessageTemplate = `🎫 *TICKET VIP | SOMAFIT FISIOTERAPIA®* 🎫
+
+¡Hola Andrea y Sara! Formo parte del grupo de pacientes históricos seleccionados por inauguración.
+
+✨ *Premio de Apertura Obtenido:* ${premioSeleccionadoPorAlgoritmo.nombre}
+🔐 *Código Único de Validación:* ${codigoVipUnicoGlobal}
+ℹ️ *Módulo de Especialidad:* ${premioSeleccionadoPorAlgoritmo.cond}
+
+_Deseo agendar mi regreso a consulta en las nuevas instalaciones de San Isidro para hacer válido mi ticket._`;
+            
+            window.open(`https://wa.me/${targetSomaFitNumber}?text=${encodeURIComponent(enrichWhatsAppMessageTemplate)}`, '_blank');
+        }
+
+        // HUEVO DE PASCUA: MECANISMO INTERACTIVO SECRETO Detrás del Logo (Clave: 1123346)
+        function triggerAdminSecretAccess() {
+            secretClickCounter++;
+            if(secretClickCounter === 3) {
+                secretClickCounter = 0;
+                const securePasswordChallenge = prompt("Consola Directiva Interna. Introduce la clave de Sara y Andrea:");
+                if(securePasswordChallenge === "1123346") {
+                    toggleAdminDashboardLayoutVisibility();
+                } else if(securePasswordChallenge !== null) {
+                    alert("Clave inválida. Acceso denegado por los sistemas de seguridad.");
+                }
+            }
+        }
+
+        let isDashboardCurrentlyVisibleOnScreen = false;
+        function toggleAdminDashboardLayoutVisibility() {
+            const clientLayout = document.getElementById('clientLayoutWrapper');
+            const adminLayout = document.getElementById('adminDashboardLayout');
+
+            if(!isDashboardCurrentlyVisibleOnScreen) {
+                clientLayout.style.display = 'none';
+                adminLayout.classList.add('active');
+                isDashboardCurrentlyVisibleOnScreen = true;
+                calculateAndRenderDashboardMetrics();
+            } else {
+                adminLayout.classList.remove('active');
+                clientLayout.style.display = 'flex';
+                isDashboardCurrentlyVisibleOnScreen = false;
+            }
+        }
+
+        // MÓDULO BI: Inteligencia de Negocio y Métricas Automatizadas
+        function calculateAndRenderDashboardMetrics() {
+            const leadsList = JSON.parse(localStorage.getItem('sft_v3_vs_leads') || '[]');
+            const invitationsSentFixed = 20; // Enfocado a tus 20 semanales enviadas el lunes
+            const linkOpenedSimulated = 14; 
+            const activeSpinsCount = leadsList.length;
+
+            // Fisioterapia Business Intelligence: Estimación de conversión de asistencia real sobre agenda (65%)
+            const recoveredPatientsCount = Math.ceil(activeSpinsCount * 0.65);
+            const netProjectedRevenue = recoveredPatientsCount * 350; // $350 costo neto mínimo con descuento promedio
+
+            document.getElementById('adm-spins-count').innerText = activeSpinsCount;
+            document.getElementById('adm-conversion-rate').innerText = `Tasa Conversión: ${activeSpinsCount > 0 ? ((activeSpinsCount / linkOpenedSimulated) * 100).toFixed(1) : 0}%`;
+            document.getElementById('adm-recovered-count').innerText = recoveredPatientsCount;
+            document.getElementById('adm-revenue-amount').innerText = `$${netProjectedRevenue.toLocaleString()} MXN`;
+
+            const tableBody = document.getElementById('adminTableLogsBody');
+            if(leadsList.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 25px;">Ningún paciente de la lista blanca ha participado en esta sesión todavía. Los datos capturados aparecerán aquí en tiempo real.</td></tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = "";
+            leadsList.forEach(log => {
+                const trElement = document.createElement('tr');
+                trElement.innerHTML = `
+                    <td><strong>${log.nombre}</strong></td>
+                    <td><a href="https://wa.me/${log.telefono}" target="_blank" style="color: var(--mint-wellness); text-decoration:none; font-weight:600;"><i class="fa-brands fa-whatsapp"></i> ${log.telefono}</a></td>
+                    <td><span style="color: var(--white-pearl); font-weight:500;">${log.premio}</span></td>
+                    <td><strong style="color: var(--rose-gold); letter-spacing:0.5px;">${log.cupon}</strong></td>
+                    <td><span style="color: var(--text-muted); font-size:11px;">${log.fecha}</span></td>
+                `;
+                tableBody.appendChild(trElement);
+            });
+        }
+
+        function wipeDashboardLocalLogs() {
+            if(confirm("¿Confirmas limpiar la persistencia local de leads capturados en esta ventana directiva de simulación?")) {
+                localStorage.removeItem('sft_v3_vs_init');
+                localStorage.removeItem('sft_v3_vs_used_phones');
+                localStorage.removeItem('sft_v3_vs_leads');
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
